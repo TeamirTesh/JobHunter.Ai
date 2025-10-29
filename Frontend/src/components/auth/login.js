@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowRight, Briefcase } from 'lucide-react';
+import { authAPI } from '../../services/api';
 
 const Login = ({ onLogin, onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
@@ -23,17 +24,20 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
     setError('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authAPI.login({
+        email: formData.email,
+        password: formData.password
+      });
       
-      // Mock successful login
+      // For now, we'll need to get user data separately
+      // We'll improve this when we add JWT tokens later
       onLogin({
-        id: 1,
-        name: 'John Doe',
+        id: 1, // We'll get this from the response later
+        name: 'User', // We'll get this from user profile
         email: formData.email
       });
     } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      setError(err.message || 'Invalid email or password. Please try again.');
     } finally {
       setIsLoading(false);
     }

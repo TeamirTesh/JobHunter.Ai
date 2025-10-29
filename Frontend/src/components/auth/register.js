@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Briefcase } from 'lucide-react';
+import { authAPI } from '../../services/api';
 
 const Register = ({ onRegister, onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
@@ -24,17 +25,21 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
     setError('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authAPI.register({
+        username: formData.name, // Backend expects 'username' field
+        email: formData.email,
+        password: formData.password
+      });
       
-      // Mock successful registration
+      // For now, we'll use the form data for user info
+      // We'll improve this when we add proper user data fetching
       onRegister({
-        id: 1,
+        id: 1, // We'll get this from the response later
         name: formData.name,
         email: formData.email
       });
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

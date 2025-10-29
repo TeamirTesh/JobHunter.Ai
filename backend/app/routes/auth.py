@@ -15,7 +15,10 @@ def register():
     password = data.get('password')
     email = data.get('email')
 
-    if User.query.filter_by((User.username == username) | (User.email == email)).first():
+    if not username or not password or not email:
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
         return jsonify({'error': 'Username or email already exists'}), 400
     
     hashed_password = generate_password_hash(password)

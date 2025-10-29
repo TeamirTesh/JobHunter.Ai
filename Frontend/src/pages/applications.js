@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
@@ -11,12 +11,15 @@ import {
   MapPin,
   ExternalLink
 } from 'lucide-react';
+import { applicationsAPI } from '../services/api';
 
-const Applications = ({ applications = [], onAddApplication, onUpdateApplication, onDeleteApplication }) => {
+const Applications = ({ applications = [], onAddApplication, onUpdateApplication, onDeleteApplication, user }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingApp, setEditingApp] = useState(null);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const statusOptions = [
     { value: 'all', label: 'All Applications', count: applications.length },
@@ -43,21 +46,83 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
     setShowForm(true);
   };
 
-  const handleFormSubmit = (formData) => {
+  const handleFormSubmit = async (formData) => {
     if (editingApp) {
-      onUpdateApplication(editingApp.id, formData);
+      await handleUpdateApplication(editingApp.id, formData);
     } else {
-      onAddApplication(formData);
+      await handleAddApplication(formData);
     }
     setShowForm(false);
     setEditingApp(null);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this application?')) {
-      onDeleteApplication(id);
+      await handleDeleteApplication(id);
     }
   };
+
+  const loadApplications = async () => {
+    if (!user?.id) return;
+    
+    setIsLoading(true);
+    setError('');
+    try {
+      const applications = await applicationsAPI.getAll(user.id);
+      // Update the parent component's applications state
+      applications.forEach(app => onAddApplication(app));
+    } catch (err) {
+      setError('Failed to load applications: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddApplication = async (appData) => {
+    if (!user?.id) return;
+    
+    setIsLoading(true);
+    try {
+      const newApp = await applicationsAPI.add({
+        user_id: user.id,
+        ...appData
+      });
+      onAddApplication(newApp.application);
+    } catch (err) {
+      setError('Failed to add application: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateApplication = async (id, appData) => {
+    setIsLoading(true);
+    try {
+      await applicationsAPI.update(id, appData);
+      onUpdateApplication(id, appData);
+    } catch (err) {
+      setError('Failed to update application: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteApplication = async (id) => {
+    setIsLoading(true);
+    try {
+      await applicationsAPI.delete(id);
+      onDeleteApplication(id);
+    } catch (err) {
+      setError('Failed to delete application: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Load applications when component mounts
+  useEffect(() => {
+    loadApplications();
+  }, [user?.id]);
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
@@ -92,6 +157,17 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
           Add Application
         </motion.button>
       </motion.div>
+
+      {/* Error Display */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+        >
+          {error}
+        </motion.div>
+      )}
 
       {/* Filters and Search */}
       <motion.div
@@ -141,7 +217,18 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
         transition={{ delay: 0.2, duration: 0.6 }}
         className="space-y-4"
       >
-        {filteredApplications.length > 0 ? (
+        {isLoading ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="card p-12 text-center"
+          >
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading applications...</h3>
+          </motion.div>
+        ) : filteredApplications.length > 0 ? (
           filteredApplications.map((app, index) => (
             <motion.div
               key={app.id}

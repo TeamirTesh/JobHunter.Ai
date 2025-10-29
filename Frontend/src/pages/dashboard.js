@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Briefcase, 
@@ -9,8 +9,12 @@ import {
   AlertCircle,
   Plus
 } from 'lucide-react';
+import { applicationsAPI } from '../services/api';
 
-const Dashboard = ({ applications = [] }) => {
+const Dashboard = ({ applications = [], user, onAddApplication }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
   // Calculate statistics
   const totalApplications = applications.length;
   const interviews = applications.filter(app => app.status === 'Interview').length;
@@ -51,8 +55,36 @@ const Dashboard = ({ applications = [] }) => {
       icon: Clock,
       color: 'amber',
       change: '+15%'
+    },
+    {
+      label: 'Rejected',
+      value: rejected,
+      icon: AlertCircle,
+      color: 'red',
+      change: '-2%'
     }
   ];
+
+  const loadApplications = async () => {
+    if (!user?.id) return;
+    
+    setIsLoading(true);
+    setError('');
+    try {
+      const applications = await applicationsAPI.getAll(user.id);
+      // Update the parent component's applications state
+      applications.forEach(app => onAddApplication(app));
+    } catch (err) {
+      setError('Failed to load applications: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Load applications when component mounts
+  useEffect(() => {
+    loadApplications();
+  }, [user?.id]);
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
@@ -90,6 +122,17 @@ const Dashboard = ({ applications = [] }) => {
           Here's your job application overview
         </p>
       </motion.div>
+
+      {/* Error Display */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+        >
+          {error}
+        </motion.div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -142,7 +185,18 @@ const Dashboard = ({ applications = [] }) => {
           </button>
         </div>
 
-        {recentApplications.length > 0 ? (
+        {isLoading ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-12"
+          >
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading applications...</h3>
+          </motion.div>
+        ) : recentApplications.length > 0 ? (
           <div className="space-y-4">
             {recentApplications.map((app, index) => {
               const StatusIcon = getStatusIcon(app.status);
