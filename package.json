@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.16",
+    "@tailwindcss/vite": "^4.1.16"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.18"
+  }
+}
