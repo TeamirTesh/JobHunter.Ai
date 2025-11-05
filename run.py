@@ -1,4 +1,4 @@
-from app import create_app
+from backend.app import create_app
 
 # Expose a callable for Flask CLI / Flask-Migrate
 app = create_app()

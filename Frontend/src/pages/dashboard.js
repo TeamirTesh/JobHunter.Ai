@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Briefcase, 
@@ -9,7 +9,6 @@ import {
   AlertCircle,
   Plus
 } from 'lucide-react';
-import { applicationsAPI } from '../services/api';
 
 const Dashboard = ({ applications = [], user, onAddApplication }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -65,26 +64,6 @@ const Dashboard = ({ applications = [], user, onAddApplication }) => {
     }
   ];
 
-  const loadApplications = async () => {
-    if (!user?.id) return;
-    
-    setIsLoading(true);
-    setError('');
-    try {
-      const applications = await applicationsAPI.getAll(user.id);
-      // Update the parent component's applications state
-      applications.forEach(app => onAddApplication(app));
-    } catch (err) {
-      setError('Failed to load applications: ' + err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Load applications when component mounts
-  useEffect(() => {
-    loadApplications();
-  }, [user?.id]);
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
@@ -215,6 +194,9 @@ const Dashboard = ({ applications = [], user, onAddApplication }) => {
                     <div>
                       <h3 className="font-semibold text-gray-900">{app.company}</h3>
                       <p className="text-gray-600">{app.role}</p>
+                      {app.location && (
+                        <p className="text-sm text-gray-500">{app.location}</p>
+                      )}
                       <p className="text-sm text-gray-500">
                         Applied {new Date(app.created_at).toLocaleDateString()}
                       </p>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
@@ -62,22 +62,6 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
     }
   };
 
-  const loadApplications = async () => {
-    if (!user?.id) return;
-    
-    setIsLoading(true);
-    setError('');
-    try {
-      const applications = await applicationsAPI.getAll(user.id);
-      // Update the parent component's applications state
-      applications.forEach(app => onAddApplication(app));
-    } catch (err) {
-      setError('Failed to load applications: ' + err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleAddApplication = async (appData) => {
     if (!user?.id) return;
     
@@ -119,10 +103,6 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
     }
   };
 
-  // Load applications when component mounts
-  useEffect(() => {
-    loadApplications();
-  }, [user?.id]);
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
@@ -246,6 +226,12 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
                     <h3 className="text-lg font-semibold text-gray-900">{app.company}</h3>
                     <p className="text-gray-600">{app.role}</p>
                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                      {app.location && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {app.location}
+                        </span>
+                      )}
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
                         {new Date(app.created_at).toLocaleDateString()}
@@ -342,6 +328,7 @@ const ApplicationForm = ({ application, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     company: application?.company || '',
     role: application?.role || '',
+    location: application?.location || '',
     status: application?.status || 'Applied',
     source: application?.source || 'manual'
   });
@@ -388,6 +375,18 @@ const ApplicationForm = ({ application, onSubmit, onCancel }) => {
             className="form-input"
             placeholder="Enter job title"
             required
+          />
+        </div>
+
+        <div>
+          <label className="form-label">Location</label>
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            className="form-input"
+            placeholder="Enter location (e.g., San Francisco, CA or Remote)"
           />
         </div>
 
