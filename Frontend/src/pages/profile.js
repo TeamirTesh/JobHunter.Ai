@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Calendar, Settings, Bell, Shield } from 'lucide-react';
+import { User, Mail, Calendar, Settings, Bell, Shield, Plus, Trash2, Edit } from 'lucide-react';
+import { userAPI } from '../services/api';
+import EmailAccountsList from '../components/email-accounts/EmailAccountsList';
 
 const Profile = ({ user }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const profileSections = [
     {
       title: 'Account Information',
@@ -33,6 +38,26 @@ const Profile = ({ user }) => {
     }
   ];
 
+  const loadUserData = async () => {
+    if (!user?.id) return;
+    
+    setIsLoading(true);
+    setError('');
+    try {
+      const userData = await userAPI.getProfile(user.id);
+      // Email accounts are now handled by EmailAccountsList component
+    } catch (err) {
+      setError('Failed to load profile data: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Load user data when component mounts
+  useEffect(() => {
+    loadUserData();
+  }, [user?.id]);
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
@@ -45,6 +70,17 @@ const Profile = ({ user }) => {
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Profile</h1>
         <p className="text-xl text-gray-600">Manage your account settings and preferences</p>
       </motion.div>
+
+      {/* Error Display */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+        >
+          {error}
+        </motion.div>
+      )}
 
       {/* Profile Header */}
       <motion.div
@@ -77,6 +113,22 @@ const Profile = ({ user }) => {
         </div>
       </motion.div>
 
+      {/* Email Accounts Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+        className="card p-6"
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-gray-100 rounded-lg">
+            <Mail className="w-5 h-5 text-gray-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900">Email Accounts</h3>
+        </div>
+        <EmailAccountsList />
+      </motion.div>
+
       {/* Profile Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {profileSections.map((section, sectionIndex) => {
@@ -86,7 +138,7 @@ const Profile = ({ user }) => {
               key={section.title}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + sectionIndex * 0.1, duration: 0.6 }}
+              transition={{ delay: 0.3 + sectionIndex * 0.1, duration: 0.6 }}
               className="card p-6"
             >
               <div className="flex items-center gap-3 mb-6">
@@ -139,4 +191,3 @@ const Profile = ({ user }) => {
 };
 
 export default Profile;
-
