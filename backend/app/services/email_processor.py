@@ -1,6 +1,10 @@
 from app.models import User, Application, EmailAccount
 from app import db
-from app.services.gmail_service import fetch_recent_emails, fetch_recent_emails_for_account
+from app.services.gmail_service import (
+    fetch_recent_emails,
+    fetch_recent_emails_for_account as fetch_recent_gmail_emails_for_account
+)
+from app.services.outlook_service import fetch_recent_emails_for_account as fetch_recent_outlook_emails_for_account
 from app.services.openai_service import analyze_multiple_emails
 from datetime import datetime, timezone
 import logging
@@ -293,20 +297,11 @@ def process_emails_for_account(email_account, max_emails=500):
         }
     """
     
-    if email_account.provider not in ['Gmail', 'Outlook']:
-        logger.error(f"EmailAccount {email_account.id} has unsupported provider: {email_account.provider}")
-        return {
-            'total_emails': 0,
-            'job_related_emails': 0,
-            'applications_created': 0,
-            'applications_updated': 0,
-            'errors': 0,
-            'applications': []
-        }
-    
-    # Only Gmail is supported for now (Outlook will need Microsoft Graph API integration)
-    if email_account.provider != 'Gmail':
-        logger.warning(f"EmailAccount {email_account.id} provider {email_account.provider} not yet implemented")
+    supported_providers = ['Gmail', 'Outlook']
+    if email_account.provider not in supported_providers:
+        logger.error(
+            f"EmailAccount {email_account.id} has unsupported provider: {email_account.provider}"
+        )
         return {
             'total_emails': 0,
             'job_related_emails': 0,
@@ -330,7 +325,16 @@ def process_emails_for_account(email_account, max_emails=500):
     try:
         # Step 1: Fetch emails from Gmail
         logger.info(f"Fetching emails for EmailAccount {email_account.id}...")
-        emails = fetch_recent_emails_for_account(email_account, max_emails=max_emails)
+        if email_account.provider == 'Gmail':
+            emails = fetch_recent_gmail_emails_for_account(
+                email_account,
+                max_emails=max_emails
+            )
+        else:
+            emails = fetch_recent_outlook_emails_for_account(
+                email_account,
+                max_emails=max_emails
+            )
         results['total_emails'] = len(emails)
         
         if not emails:

@@ -22,8 +22,6 @@ MICROSOFT_CLIENT_SECRET = os.environ.get('MICROSOFT_CLIENT_SECRET')
 MICROSOFT_TENANT_ID = os.environ.get('MICROSOFT_TENANT_ID', 'common')
 MICROSOFT_REDIRECT_URI = os.environ.get('MICROSOFT_REDIRECT_URI', 'http://localhost:5000/auth/microsoft/callback')
 
-# Microsoft Graph API scopes
-# Note: offline_access is automatically included by MSAL, don't add it explicitly
 MICROSOFT_SCOPES = [
     'User.Read',
     'Mail.Read'

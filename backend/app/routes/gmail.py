@@ -35,7 +35,9 @@ MICROSOFT_EMAIL_SCOPES = [
 
 # Google scopes for Gmail API access
 GMAIL_SCOPES = [
+    'openid',
     'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
     'https://www.googleapis.com/auth/gmail.readonly'
 ]
 
