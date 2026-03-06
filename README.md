@@ -1,89 +1,86 @@
-# JobHunter.ai
+# JobHunter.Ai
 
-A full-stack web application that automatically tracks job applications by analyzing emails from Gmail and Outlook. The app uses AI (OpenAI) to extract job application information from emails and creates a centralized dashboard for managing your job search.
+**JobHunter.Ai** is a full-stack job application tracker that syncs with your inbox. Connect Gmail or Outlook, and the app uses AI to pull companies, roles, and status from your emails into one dashboard—so you can see every application at a glance.
+
+---
 
 ## Features
 
-- **Email Integration**: Connect Gmail and Outlook accounts to automatically sync job-related emails
-- **AI-Powered Analysis**: Uses OpenAI to intelligently extract job application details (company, role, location, status) from emails
-- **Application Tracking**: Centralized dashboard to view and manage all job applications
-- **Status Management**: Track application status (Applied, Interview, Offer, Rejected)
-- **OAuth Authentication**: Secure login with Google and Microsoft accounts
-- **Automatic Sync**: Background jobs sync email accounts every 30 minutes
-- **Multi-Account Support**: Connect multiple email accounts per user
+- **Email sync** — Connect Gmail and Outlook via OAuth; job-related emails are synced automatically.
+- **AI extraction** — OpenAI parses company, role, location, and status from your emails.
+- **Single dashboard** — View and manage all applications (Applied, Interview, Offer, Rejected) in one place.
+- **OAuth sign-in** — Log in with Google or Microsoft; optional email/password sign-up.
+- **Scheduled sync** — Background job runs every 30 minutes to keep applications up to date.
+- **Multiple accounts** — Connect more than one email account per user.
+- **Dark UI** — Minimal, professional dashboard with a consistent dark theme.
+
+---
 
 ## Tech Stack
 
-### Backend
-- **Flask** - Python web framework
-- **SQLAlchemy** - ORM for database management
-- **Flask-Migrate** - Database migrations
-- **Google API Client** - Gmail integration
-- **MSAL (Microsoft Authentication Library)** - Outlook integration
-- **OpenAI API** - Email analysis and data extraction
-- **APScheduler** - Background job scheduling
+| Layer    | Technologies |
+|----------|--------------|
+| **Backend**  | Flask, SQLAlchemy, Flask-Migrate, Google API Client, MSAL (Microsoft), OpenAI API, APScheduler |
+| **Frontend** | React, Tailwind CSS, Framer Motion, Lucide React |
+| **Database** | PostgreSQL (recommended), or SQLite / MySQL |
 
-### Frontend
-- **React** - UI framework
-- **Tailwind CSS** - Styling
-- **Framer Motion** - Animations
-- **Lucide React** - Icons
+---
 
 ## Prerequisites
 
-- Python 3.8+
-- Node.js 14+
-- PostgreSQL, MySQL, or SQLite
-- Google OAuth credentials (for Gmail integration)
-- Microsoft Azure App Registration (for Outlook integration)
-- OpenAI API key
+- **Python 3.8+**
+- **Node.js 14+**
+- **PostgreSQL** (or SQLite / MySQL)
+- **Google OAuth** credentials (Gmail)
+- **Microsoft Azure** app registration (Outlook)
+- **OpenAI API** key
+
+---
 
 ## Quick Start
 
-### 1. Clone the Repository
+### 1. Clone and enter the project
 
 ```bash
-git clone <repository-url>
-cd ActualLearn
+git clone https://github.com/TeamirTesh/JobHunter.Ai.git
+cd JobHunter.Ai
 ```
 
-### 2. Backend Setup
+### 2. Backend
 
 ```bash
-# Create virtual environment
+# Virtual environment
 python -m venv venv
 
-# Activate virtual environment
-# On Windows:
+# Activate (Windows)
 venv\Scripts\activate
-# On macOS/Linux:
+# Activate (macOS/Linux)
 source venv/bin/activate
 
-# Install dependencies
+# Dependencies
 pip install -r requirements.txt
-
-# Set up environment variables
-# Create a .env file in the root directory with:
 ```
 
-Create a `.env` file in the root directory:
+### 3. Environment variables
+
+Create a `.env` file in the **project root**:
 
 ```env
-# Database
+# Database (use your own URL for production)
 DATABASE_URL=sqlite:///instance/jobhunter.db
-# Or for PostgreSQL:
+# Example PostgreSQL:
 # DATABASE_URL=postgresql://user:password@localhost/jobhunter
 
 # Flask
 SECRET_KEY=your-secret-key-here
 
-# Google OAuth (for Gmail)
+# Google OAuth (Gmail)
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_REDIRECT_URI=http://localhost:5000/auth/google/callback
 GMAIL_CONNECT_REDIRECT_URI=http://localhost:5000/gmail/callback
 
-# Microsoft OAuth (for Outlook)
+# Microsoft OAuth (Outlook)
 MICROSOFT_CLIENT_ID=your-microsoft-client-id
 MICROSOFT_CLIENT_SECRET=your-microsoft-client-secret
 MICROSOFT_TENANT_ID=common
@@ -93,193 +90,162 @@ OUTLOOK_CONNECT_REDIRECT_URI=http://localhost:5000/gmail/callback
 # OpenAI
 OPENAI_API_KEY=your-openai-api-key
 
-# Frontend URL
+# Frontend (for CORS / redirects)
 FRONTEND_URL=http://localhost:3000
 ```
 
-### 3. Database Setup
+### 4. Database
 
-You can either use Flask-Migrate or the provided SQL script:
+**Option A – Flask-Migrate (recommended)**
 
-**Option A: Using Flask-Migrate (Recommended)**
 ```bash
 cd backend
 flask db upgrade
+cd ..
 ```
 
-**Option B: Using SQL Script**
+**Option B – Schema script**
+
 ```bash
-# For SQLite
+# SQLite
 sqlite3 instance/jobhunter.db < schema.sql
 
-# For PostgreSQL
+# PostgreSQL
 psql -U username -d database_name -f schema.sql
-
-# For MySQL
-mysql -u username -p database_name < schema.sql
 ```
 
-### 4. Frontend Setup
+### 5. Frontend
 
 ```bash
-cd frontend
+cd Frontend
 npm install
+cd ..
 ```
 
-### 5. Run the Application
+### 6. Run the app
 
-**Terminal 1 - Backend:**
+**Terminal 1 – Backend (from project root):**
+
 ```bash
-# From root directory
 python run.py
-# Or
-flask run
 ```
 
-The backend will run on `http://localhost:5000`
+Backend: **http://localhost:5000**
 
-**Terminal 2 - Frontend:**
+**Terminal 2 – Frontend:**
+
 ```bash
-cd frontend
+cd Frontend
 npm start
 ```
 
-The frontend will run on `http://localhost:3000`
+Frontend: **http://localhost:3000**
+
+Open **http://localhost:3000** in your browser to use the app.
+
+---
 
 ## OAuth Setup
 
-### Google OAuth Setup
+### Google (Gmail)
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable Gmail API
-4. Create OAuth 2.0 credentials (Web application)
-5. Add authorized redirect URIs:
+1. [Google Cloud Console](https://console.cloud.google.com/) → create or select a project.
+2. Enable **Gmail API**.
+3. **APIs & Services → Credentials** → Create **OAuth 2.0 Client ID** (Web application).
+4. Add **Authorized redirect URIs**:
    - `http://localhost:5000/auth/google/callback`
    - `http://localhost:5000/gmail/callback`
-6. Copy Client ID and Client Secret to `.env`
+5. Put **Client ID** and **Client secret** in `.env`.
 
-### Microsoft Azure Setup
+### Microsoft (Outlook)
 
-1. Go to [Azure Portal](https://portal.azure.com/)
-2. Navigate to Azure Active Directory > App registrations
-3. Create a new registration
-4. Add redirect URIs:
+1. [Azure Portal](https://portal.azure.com/) → **Azure Active Directory** → **App registrations** → **New registration**.
+2. **Authentication** → Add **Redirect URI** (Web):
    - `http://localhost:5000/auth/microsoft/callback`
    - `http://localhost:5000/gmail/callback`
-5. Add API permissions:
-   - `User.Read`
-   - `Mail.Read`
-6. Copy Application (client) ID, Directory (tenant) ID, and create a client secret
-7. Add credentials to `.env`
+3. **API permissions** → Add: `User.Read`, `Mail.Read`.
+4. **Certificates & secrets** → New client secret.
+5. Put **Application (client) ID**, **Directory (tenant) ID**, and **Client secret** in `.env`.
+
+---
 
 ## Project Structure
 
 ```
-ActualLearn/
+JobHunter.Ai/
 ├── backend/
 │   ├── app/
 │   │   ├── __init__.py          # Flask app factory
-│   │   ├── models.py             # Database models
-│   │   ├── routes/               # API routes
-│   │   │   ├── auth.py           # Authentication endpoints
-│   │   │   ├── oauth.py          # OAuth callbacks
-│   │   │   ├── gmail.py          # Email account management
-│   │   │   ├── applications.py  # Application CRUD
-│   │   │   └── accounts.py       # User account management
-│   │   ├── services/             # Business logic
-│   │   │   ├── email_processor.py    # Email processing orchestration
-│   │   │   ├── gmail_service.py      # Gmail API integration
-│   │   │   ├── outlook_service.py    # Outlook/Microsoft Graph integration
-│   │   │   └── openai_service.py    # OpenAI API integration
+│   │   ├── models.py            # SQLAlchemy models
+│   │   ├── routes/              # API routes (auth, oauth, gmail, applications, accounts)
+│   │   ├── services/            # email_processor, gmail, outlook, openai
 │   │   └── utils/
-│   │       └── auth.py           # JWT token utilities
-│   ├── migrations/               # Database migrations
-│   └── instance/                 # Database files (SQLite)
-├── frontend/
+│   ├── migrations/              # Flask-Migrate migrations
+│   └── instance/                # SQLite DB (if used)
+├── Frontend/
 │   ├── src/
-│   │   ├── components/           # React components
-│   │   ├── pages/                # Page components
-│   │   └── services/             # API client
+│   │   ├── components/          # Layout, auth, email-accounts, CompanyLogo
+│   │   ├── pages/               # Dashboard, Applications, Profile
+│   │   └── services/            # API client
 │   └── public/
-├── schema.sql                    # Database schema script
-├── requirements.txt             # Python dependencies
-├── run.py                       # Application entry point
-└── README.md                     # This file
+├── schema.sql                   # Standalone DB schema
+├── requirements.txt
+├── run.py                       # Backend entry point
+└── README.md
 ```
 
-## API Endpoints
+---
 
-### Authentication
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - Login with credentials
-- `GET /auth/google` - Initiate Google OAuth
-- `GET /auth/microsoft` - Initiate Microsoft OAuth
+## Main API Endpoints
 
-### Email Accounts
-- `GET /gmail/accounts` - Get all connected email accounts
-- `GET /gmail/connect?provider=gmail|outlook` - Connect email account
-- `POST /gmail/sync/<account_id>` - Trigger manual sync
-- `GET /gmail/status/<account_id>` - Get sync status
-- `DELETE /gmail/accounts/<account_id>` - Disconnect account
+| Area | Method | Endpoint | Description |
+|------|--------|----------|-------------|
+| Auth | POST | `/auth/register` | Register (email/password) |
+| Auth | POST | `/auth/login` | Login |
+| Auth | GET  | `/auth/google` | Start Google OAuth |
+| Auth | GET  | `/auth/microsoft` | Start Microsoft OAuth |
+| Email | GET  | `/gmail/accounts` | List connected email accounts |
+| Email | GET  | `/gmail/connect?provider=gmail\|outlook` | Connect account |
+| Email | POST | `/gmail/sync/<account_id>` | Manual sync |
+| Email | DELETE | `/gmail/accounts/<account_id>` | Disconnect account |
+| Apps | GET  | `/applications/<user_id>` | List applications |
+| Apps | POST | `/applications` | Create application |
+| Apps | PATCH | `/applications/<id>` | Update application |
+| Apps | DELETE | `/applications/<id>` | Delete application |
 
-### Applications
-- `GET /applications/<user_id>` - Get all applications for user
-- `POST /applications` - Create new application
-- `PATCH /applications/<app_id>` - Update application
-- `DELETE /applications/<app_id>` - Delete application
+---
 
 ## How It Works
 
-1. **User Registration/Login**: Users can register with email/password or use OAuth (Google/Microsoft)
+1. **Sign in** — Email/password or Google/Microsoft OAuth.
+2. **Connect email** — Link Gmail or Outlook; the app gets permission to read mail.
+3. **Sync & parse** — The backend fetches emails and uses OpenAI to detect job-related messages and extract company, role, location, and status.
+4. **Dashboard** — Applications show up on the dashboard; you can filter, search, and edit.
+5. **Background sync** — A scheduler runs every 30 minutes to pull new emails and update applications.
 
-2. **Email Account Connection**: Users connect their Gmail or Outlook accounts via OAuth
-
-3. **Email Sync**: The app fetches emails from connected accounts and uses OpenAI to:
-   - Identify job-related emails
-   - Extract company name, role, location, and status
-   - Create or update application records
-
-4. **Application Management**: Users can view, edit, and manage applications in the dashboard
-
-5. **Automatic Updates**: Background scheduler runs every 30 minutes to sync new emails
-
-## Environment Variables
-
-See the `.env` example in the Quick Start section for all required environment variables.
-
-## Database Schema
-
-The application uses three main tables:
-- **users**: User accounts and OAuth credentials
-- **email_accounts**: Connected email accounts with sync status
-- **applications**: Job application records
-
-See `schema.sql` for the complete schema definition.
+---
 
 ## Development
 
-### Running Migrations
+**Migrations (backend):**
 
 ```bash
-# Create a new migration
+cd backend
 flask db migrate -m "Description"
-
-# Apply migrations
 flask db upgrade
 ```
 
-### Building Frontend
+**Frontend build:**
 
 ```bash
-cd frontend
+cd Frontend
 npm run build
 ```
+
+---
 
 ## License
 
 This project is private and proprietary.
 
-## Contributing
-
-This is a private project. For questions or issues, please contact the repository owner.
+For questions or access, contact the repository owner.
