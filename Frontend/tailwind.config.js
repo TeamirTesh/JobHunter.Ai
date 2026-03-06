@@ -6,6 +6,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        jobhunter: {
+          bg: '#0B0B0C',
+          surface: '#121214',
+          surfaceAlt: '#16161A',
+          sidebar: '#0F0F11',
+          sidebarHover: '#151518',
+          border: '#1F1F23',
+          text: '#F5F5F7',
+          textMuted: '#9CA3AF',
+          accent: '#FF7A1A',
+        },
         // Modern color palette inspired by Vercel/Linear
         primary: {
           50: '#f0f9ff',

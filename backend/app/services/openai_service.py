@@ -112,11 +112,16 @@ Body: {email_data.get('body', email_data.get('snippet', ''))[:2000]}  # Limit to
 Email:
 {email_content}
 
+Rules for extraction:
+- "company": Infer from the email body, subject, or the "From" field. If the sender is careers@wellsfargo.com or "Wells Fargo Careers", use "Wells Fargo". If only a domain is visible (e.g. noreply@company.com), use a readable company name (e.g. "Company" from company.com). Never leave null if you can infer from From/domain/signature.
+- "role": Extract from body or subject (e.g. "Software Engineer", "Prospective Intern", "Part Time Teller"). If the email references a position but does not name it, use a short label (e.g. "Intern", "Teller") or the subject line role if present. Use "Unknown role" only when there is no hint at all.
+- Prefer inferring a plausible company/role over returning null. Null only when the email gives zero signal (e.g. generic "We received your application" with no sender/company/role info).
+
 Extract and respond with a JSON object containing:
-1. "company": string or null - the company name if mentioned
-2. "role": string or null - the job title/position if mentioned
-3. "location": string or null - the job location (city, state, country, or "Remote") if mentioned
-4. "status": string - one of: "applied" (application submitted), "interview" (interview scheduled/invitation), "offer" (job offer received), "rejected" (rejection), "other" (other job-related communication)
+1. "company": string - company name (infer from From/body/subject when possible; use "Unknown company" only if impossible)
+2. "role": string - job title/position (infer from subject/body when possible; use "Unknown role" only if impossible)
+3. "location": string or null - job location (city, state, country, or "Remote") if mentioned
+4. "status": string - one of: "applied", "interview", "offer", "rejected", "other"
 5. "confidence": float between 0.0 and 1.0 - how confident you are in this extraction
 6. "notes": string or null - any additional relevant information
 

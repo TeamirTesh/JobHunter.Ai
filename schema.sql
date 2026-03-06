@@ -6,7 +6,7 @@
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255),  -- null for OAuth-only users
     email VARCHAR(120) NOT NULL UNIQUE,
     name VARCHAR(100),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -37,8 +37,9 @@ CREATE TABLE IF NOT EXISTS email_accounts (
 CREATE TABLE IF NOT EXISTS applications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
-    company VARCHAR(100) NOT NULL,
-    role VARCHAR(100) NOT NULL,
+    company VARCHAR(100),
+    role VARCHAR(100),
+    company_domain VARCHAR(255),
     location VARCHAR(200),
     status VARCHAR(100) DEFAULT 'Applied',
     source VARCHAR(100) DEFAULT 'manual',

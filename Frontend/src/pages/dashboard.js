@@ -1,72 +1,30 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Briefcase, 
-  Calendar, 
-  TrendingUp, 
-  CheckCircle,
-  Clock,
-  AlertCircle,
-  Plus
-} from 'lucide-react';
+import { Briefcase, Calendar, CheckCircle, Clock, AlertCircle, Plus } from 'lucide-react';
+import CompanyLogo from '../components/CompanyLogo';
 
-const Dashboard = ({ applications = [], user, onAddApplication }) => {
+const Dashboard = ({ applications = [], user, onAddApplication, onPageChange }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Calculate statistics
   const totalApplications = applications.length;
-  const interviews = applications.filter(app => app.status === 'Interview').length;
-  const offers = applications.filter(app => app.status === 'Offer').length;
-  const rejected = applications.filter(app => app.status === 'Rejected').length;
-  const applied = applications.filter(app => app.status === 'Applied').length;
+  const interviews = applications.filter((app) => app.status === 'Interview').length;
+  const offers = applications.filter((app) => app.status === 'Offer').length;
+  const rejected = applications.filter((app) => app.status === 'Rejected').length;
+  const applied = applications.filter((app) => app.status === 'Applied').length;
 
-  // Get recent applications (last 5)
   const recentApplications = applications
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 5);
 
   const stats = [
-    {
-      label: 'Total Applications',
-      value: totalApplications,
-      icon: Briefcase,
-      color: 'indigo',
-      change: '+12%'
-    },
-    {
-      label: 'Interviews',
-      value: interviews,
-      icon: Calendar,
-      color: 'blue',
-      change: '+8%'
-    },
-    {
-      label: 'Offers',
-      value: offers,
-      icon: CheckCircle,
-      color: 'emerald',
-      change: '+3%'
-    },
-    {
-      label: 'Applied',
-      value: applied,
-      icon: Clock,
-      color: 'amber',
-      change: '+15%'
-    },
-    {
-      label: 'Rejected',
-      value: rejected,
-      icon: AlertCircle,
-      color: 'red',
-      change: '-2%'
-    }
+    { label: 'Total Applications', value: totalApplications },
+    { label: 'Interviews', value: interviews },
+    { label: 'Offers', value: offers },
+    { label: 'Rejected', value: rejected },
   ];
 
-
   const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'applied': return 'status-applied';
       case 'interview': return 'status-interview';
       case 'offer': return 'status-offer';
@@ -76,7 +34,7 @@ const Dashboard = ({ applications = [], user, onAddApplication }) => {
   };
 
   const getStatusIcon = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'applied': return Clock;
       case 'interview': return Calendar;
       case 'offer': return CheckCircle;
@@ -86,196 +44,99 @@ const Dashboard = ({ applications = [], user, onAddApplication }) => {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center lg:text-left"
-      >
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">
-          Welcome back! 👋
-        </h1>
-        <p className="text-xl text-gray-600">
-          Here's your job application overview
-        </p>
-      </motion.div>
-
-      {/* Error Display */}
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-        >
-          {error}
-        </motion.div>
-      )}
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.6 }}
-              className="card card-hover p-6"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl bg-${stat.color}-50`}>
-                  <Icon className={`w-6 h-6 text-${stat.color}-600`} />
-                </div>
-                <span className="text-sm font-medium text-emerald-600">
-                  {stat.change}
-                </span>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-gray-900 mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-gray-600">
-                  {stat.label}
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-[26px] font-semibold text-jobhunter-text tracking-tight">Dashboard</h1>
+        <p className="text-[13px] text-jobhunter-textMuted mt-0.5">Overview of your job applications</p>
       </div>
 
-      {/* Recent Applications */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.6 }}
-        className="card p-6"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Recent Applications</h2>
-            <p className="text-gray-600">Your latest job applications</p>
-          </div>
-          <button className="btn btn-primary">
-            <Plus className="w-4 h-4" />
-            Add Application
-          </button>
+      {error && (
+        <div className="p-3 bg-jobhunter-surface border border-jobhunter-border rounded-lg text-red-400 text-[13px]">
+          {error}
         </div>
+      )}
 
-        {isLoading ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-12"
+      {/* Stats grid — denser */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {stats.map((stat, index) => (
+          <div
+            key={stat.label}
+            className="bg-jobhunter-surface border border-jobhunter-border rounded-[10px] p-4 transition-colors duration-150 hover:border-jobhunter-border"
           >
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+            <p className="text-[11px] font-medium text-jobhunter-textMuted uppercase tracking-wide mb-0.5">
+              {stat.label}
+            </p>
+            <p className="text-[28px] font-semibold text-jobhunter-text tracking-tight">{stat.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Recent Applications — table-like panel */}
+      <div className="bg-jobhunter-surface border border-jobhunter-border rounded-[12px] overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-jobhunter-border">
+          <h2 className="text-[16px] font-medium text-jobhunter-text">Recent Applications</h2>
+          {onPageChange && (
+            <button
+              type="button"
+              onClick={() => onPageChange('applications')}
+              className="text-[13px] text-jobhunter-accent hover:underline transition-colors duration-150"
+            >
+              View all
+            </button>
+          )}
+        </div>
+        <div className="p-4">
+          {isLoading ? (
+            <div className="py-8 text-center">
+              <div className="w-6 h-6 border-2 border-jobhunter-border border-t-jobhunter-accent rounded-full animate-spin mx-auto mb-2" />
+              <p className="text-[13px] text-jobhunter-textMuted">Loading applications...</p>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading applications...</h3>
-          </motion.div>
-        ) : recentApplications.length > 0 ? (
-          <div className="space-y-4">
-            {recentApplications.map((app, index) => {
-              const StatusIcon = getStatusIcon(app.status);
-              return (
-                <motion.div
-                  key={app.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.4 }}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                      <Briefcase className="w-6 h-6 text-gray-600" />
+          ) : recentApplications.length > 0 ? (
+            <div className="space-y-2">
+              {recentApplications.map((app) => {
+                const StatusIcon = getStatusIcon(app.status);
+                return (
+                  <div
+                    key={app.id}
+                    className="flex items-center justify-between py-2.5 px-3 rounded-lg bg-jobhunter-bg border border-jobhunter-border transition-colors duration-150"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <CompanyLogo company_domain={app.company_domain} company={app.company} size={10} className="border border-jobhunter-border flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="font-medium text-jobhunter-text text-[13px] truncate">{app.company ?? 'Unknown company'}</p>
+                        <p className="text-jobhunter-textMuted text-[13px] truncate">{app.role ?? 'Unknown role'}</p>
+                        <p className="text-jobhunter-textMuted text-[12px]">Applied {new Date(app.created_at).toLocaleDateString()}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{app.company}</h3>
-                      <p className="text-gray-600">{app.role}</p>
-                      {app.location && (
-                        <p className="text-sm text-gray-500">{app.location}</p>
-                      )}
-                      <p className="text-sm text-gray-500">
-                        Applied {new Date(app.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`status-badge ${getStatusColor(app.status)}`}>
-                      <StatusIcon className="w-3 h-3 mr-1" />
+                    <span className={`status-badge ${getStatusColor(app.status)} flex-shrink-0 ml-2`}>
+                      <StatusIcon className="w-3 h-3 mr-1 inline" />
                       {app.status}
                     </span>
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
-            className="text-center py-12"
-          >
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Briefcase className="w-8 h-8 text-gray-400" />
+                );
+              })}
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              No applications yet
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Start by adding your first job application to track your progress
-            </p>
-            <button className="btn btn-primary">
-              <Plus className="w-4 h-4" />
-              Add Your First Application
-            </button>
-          </motion.div>
-        )}
-      </motion.div>
-
-      {/* Quick Actions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.6 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-6"
-      >
-        <div className="card p-6 text-center">
-          <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <TrendingUp className="w-6 h-6 text-indigo-600" />
-          </div>
-          <h3 className="font-semibold text-gray-900 mb-2">Track Progress</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Monitor your application success rate and identify patterns
-          </p>
-          <button className="btn btn-ghost text-sm">View Analytics</button>
+          ) : (
+            <div className="py-6 text-center">
+              <div className="w-10 h-10 rounded-lg bg-jobhunter-surfaceAlt border border-jobhunter-border flex items-center justify-center mx-auto mb-3">
+                <Briefcase className="w-5 h-5 text-jobhunter-textMuted" />
+              </div>
+              <p className="text-[13px] font-medium text-jobhunter-text mb-0.5">No applications yet</p>
+              <p className="text-[13px] text-jobhunter-textMuted mb-3">Start by adding your first job application</p>
+              {onPageChange && (
+                <button
+                  type="button"
+                  onClick={() => onPageChange('applications')}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-jobhunter-text border border-jobhunter-border rounded-lg hover:border-jobhunter-accent hover:text-jobhunter-accent transition-all duration-150"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Application
+                </button>
+              )}
+            </div>
+          )}
         </div>
-
-        <div className="card p-6 text-center">
-          <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <Calendar className="w-6 h-6 text-emerald-600" />
-          </div>
-          <h3 className="font-semibold text-gray-900 mb-2">Schedule Interviews</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Keep track of upcoming interviews and important dates
-          </p>
-          <button className="btn btn-ghost text-sm">View Calendar</button>
-        </div>
-
-        <div className="card p-6 text-center">
-          <div className="w-12 h-12 bg-cyan-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <Briefcase className="w-6 h-6 text-cyan-600" />
-          </div>
-          <h3 className="font-semibold text-gray-900 mb-2">Manage Applications</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Add, edit, and organize all your job applications in one place
-          </p>
-          <button className="btn btn-ghost text-sm">View All</button>
-        </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

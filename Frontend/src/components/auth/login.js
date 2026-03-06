@@ -78,49 +78,27 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
         transition={{ duration: 0.6 }}
         className="w-full max-w-md"
       >
-        {/* Header */}
-        <div className="text-center mb-8">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-soft-lg"
-          >
-            <Briefcase className="w-8 h-8 text-white" />
-          </motion.div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>
-          <p className="text-gray-600">Sign in to your JobHunter account</p>
+        <div className="text-center mb-6">
+          <h1 className="text-[28px] font-semibold text-jobhunter-text tracking-tight">Sign in</h1>
+          <p className="text-[13px] text-jobhunter-textMuted mt-1">Sign in to your JobHunter account</p>
         </div>
 
-        {/* Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="card p-8"
-        >
+        <div className="bg-jobhunter-surface border border-jobhunter-border rounded-[10px] p-6">
           {error && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-            >
+            <div className="mb-4 p-4 bg-jobhunter-bg border border-jobhunter-border rounded-lg text-red-400 text-[13px]">
               {error}
-            </motion.div>
+            </div>
           )}
 
-          {/* OAuth Buttons */}
           <div className="space-y-3 mb-6">
-            <motion.button
+            <button
               type="button"
               onClick={handleGoogleLogin}
               disabled={isOAuthLoading || isLoading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors bg-white text-gray-700 font-medium"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-jobhunter-border rounded-lg hover:border-jobhunter-accent transition-colors duration-150 bg-jobhunter-surfaceAlt text-jobhunter-text font-medium text-[13px]"
             >
               {isOAuthLoading ? (
-                <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-jobhunter-border border-t-jobhunter-accent rounded-full animate-spin" />
               ) : (
                 <>
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -132,15 +110,13 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                   Continue with Google
                 </>
               )}
-            </motion.button>
+            </button>
 
-            <motion.button
+            <button
               type="button"
               onClick={handleMicrosoftLogin}
               disabled={isOAuthLoading || isLoading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors bg-white text-gray-700 font-medium"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-jobhunter-border rounded-lg hover:border-jobhunter-accent transition-colors duration-150 bg-jobhunter-surfaceAlt text-jobhunter-text font-medium text-[13px]"
             >
               <svg className="w-5 h-5" viewBox="0 0 23 23" fill="none">
                 <path d="M0 0h10.5v10.5H0V0z" fill="#F25022"/>
@@ -149,24 +125,23 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                 <path d="M12.5 12.5H23V23H12.5V12.5z" fill="#FFB900"/>
               </svg>
               Continue with Microsoft
-            </motion.button>
+            </button>
           </div>
 
-          {/* Divider */}
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-jobhunter-border" />
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+            <div className="relative flex justify-center text-[13px]">
+              <span className="px-2 bg-jobhunter-surface text-jobhunter-textMuted">Or continue with email</span>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="form-label">Email address</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-jobhunter-textMuted" />
                 <input
                   type="email"
                   name="email"
@@ -182,7 +157,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
             <div>
               <label className="form-label">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-jobhunter-textMuted" />
                 <input
                   type="password"
                   name="password"
@@ -195,39 +170,34 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
               </div>
             </div>
 
-            <motion.button
+            <button
               type="submit"
               disabled={isLoading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full btn btn-primary py-3 text-base font-medium"
+              className="w-full btn btn-primary py-3 text-[13px] font-medium"
             >
               {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-jobhunter-border border-t-jobhunter-accent rounded-full animate-spin" />
                   Signing in...
-                </div>
+                </span>
               ) : (
-                <div className="flex items-center gap-2">
+                <span className="flex items-center justify-center gap-2">
                   Sign in
                   <ArrowRight className="w-4 h-4" />
-                </div>
+                </span>
               )}
-            </motion.button>
+            </button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-600">
+            <p className="text-[13px] text-jobhunter-textMuted">
               Don't have an account?{' '}
-              <button
-                onClick={onSwitchToRegister}
-                className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
-              >
+              <button type="button" onClick={onSwitchToRegister} className="text-jobhunter-accent hover:underline font-medium">
                 Sign up
               </button>
             </p>
           </div>
-        </motion.div>
+        </div>
       </motion.div>
     </div>
   );

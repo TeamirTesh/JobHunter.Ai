@@ -1,15 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  User, 
-  LogOut, 
-  Settings, 
-  ChevronDown,
-  Mail,
-  Calendar
-} from 'lucide-react';
+import { User, LogOut, Settings, ChevronDown } from 'lucide-react';
 
-const UserDropdown = ({ user, onLogout }) => {
+const UserDropdown = ({ user, onLogout, compact }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -19,91 +12,71 @@ const UserDropdown = ({ user, onLogout }) => {
         setIsOpen(false);
       }
     }
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const userInitials = user?.name 
-    ? user.name.split(' ').map(n => n[0]).join('').toUpperCase()
-    : user?.email?.[0].toUpperCase() || 'U';
+  const userInitials = (String(user?.name ?? '').trim()[0] || user?.email?.[0] || 'U').toString().toUpperCase();
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* User button */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+        className={`flex items-center gap-2 text-jobhunter-text hover:bg-jobhunter-sidebarHover rounded transition-all duration-150 ${
+          compact ? 'p-1.5' : 'p-1.5 pr-2'
+        }`}
       >
-        <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center text-white text-sm font-medium">
-          {userInitials}
-        </div>
-        <div className="hidden sm:block text-left">
-          <div className="text-sm font-medium text-gray-900">
-            {user?.name || 'User'}
-          </div>
-          <div className="text-xs text-gray-500">
-            {user?.email || 'user@example.com'}
-          </div>
-        </div>
-        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        {!compact && (
+          <>
+            <div className="w-8 h-8 rounded-full bg-jobhunter-surfaceAlt border border-jobhunter-border flex items-center justify-center text-jobhunter-text text-[13px] font-medium">
+              {userInitials}
+            </div>
+            <span className="hidden sm:block text-[13px] font-medium text-jobhunter-text max-w-[120px] truncate">
+              {user?.name || 'User'}
+            </span>
+          </>
+        )}
+        <ChevronDown className={`w-4 h-4 text-jobhunter-textMuted transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
-      {/* Dropdown menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-soft-lg border border-gray-200 py-2 z-50"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            className={`absolute mt-2 w-56 bg-jobhunter-surface border border-jobhunter-border rounded-lg shadow-soft py-2 z-50 ${compact ? 'left-full ml-2' : 'right-0'}`}
           >
-            {/* User info */}
-            <div className="px-4 py-3 border-b border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center text-white font-medium">
-                  {userInitials}
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900">
-                    {user?.name || 'User'}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {user?.email || 'user@example.com'}
-                  </div>
-                </div>
-              </div>
+            <div className="px-3 py-2 border-b border-jobhunter-border">
+              <p className="text-[13px] font-medium text-jobhunter-text truncate">{user?.name || 'User'}</p>
+              <p className="text-[12px] text-jobhunter-textMuted truncate">{user?.email || ''}</p>
             </div>
-
-            {/* Menu items */}
-            <div className="py-2">
-              <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <User className="w-4 h-4" />
+            <div className="py-1">
+              <button
+                type="button"
+                className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-jobhunter-textMuted hover:text-jobhunter-text hover:bg-jobhunter-surfaceAlt transition-colors duration-150"
+              >
+                <User className="w-3.5 h-3.5" />
                 Profile
               </button>
-              <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <Settings className="w-4 h-4" />
+              <button
+                type="button"
+                className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-jobhunter-textMuted hover:text-jobhunter-text hover:bg-jobhunter-surfaceAlt transition-colors duration-150"
+              >
+                <Settings className="w-3.5 h-3.5" />
                 Settings
               </button>
-              <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <Mail className="w-4 h-4" />
-                Notifications
-              </button>
             </div>
-
-            {/* Divider */}
-            <div className="border-t border-gray-100 my-2"></div>
-
-            {/* Logout */}
+            <div className="border-t border-jobhunter-border my-1" />
             <button
+              type="button"
               onClick={onLogout}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-jobhunter-textMuted hover:text-red-400 hover:bg-jobhunter-surfaceAlt transition-colors duration-150"
             >
-              <LogOut className="w-4 h-4" />
-              Sign out
+              <LogOut className="w-3.5 h-3.5" />
+              Logout
             </button>
           </motion.div>
         )}

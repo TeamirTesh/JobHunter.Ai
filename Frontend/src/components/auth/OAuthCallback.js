@@ -41,13 +41,10 @@ const OAuthCallback = ({ onLogin }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button 
-            onClick={() => window.location.href = '/login'} 
-            className="btn btn-primary"
-          >
+          <p className="text-red-400 mb-4 text-[13px]">{error}</p>
+          <button type="button" onClick={() => window.location.href = '/login'} className="btn btn-primary">
             Go to Login
           </button>
         </div>
@@ -58,8 +55,8 @@ const OAuthCallback = ({ onLogin }) => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-gray-600">Completing sign in...</p>
+        <div className="w-8 h-8 border-2 border-jobhunter-border border-t-jobhunter-accent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-[13px] text-jobhunter-textMuted">Completing sign in...</p>
       </div>
     </div>
   );

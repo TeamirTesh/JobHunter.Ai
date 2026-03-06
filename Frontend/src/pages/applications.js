@@ -12,6 +12,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { applicationsAPI } from '../services/api';
+import CompanyLogo from '../components/CompanyLogo';
 
 const Applications = ({ applications = [], onAddApplication, onUpdateApplication, onDeleteApplication, user }) => {
   const [showForm, setShowForm] = useState(false);
@@ -31,8 +32,8 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
 
   const filteredApplications = applications.filter(app => {
     const matchesFilter = filter === 'all' || app.status === filter;
-    const matchesSearch = app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.role.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (app.company || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (app.role || '').toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -115,72 +116,46 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
-      >
+    <div className="space-y-5">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Applications</h1>
-          <p className="text-xl text-gray-600">Manage your job applications</p>
+          <h1 className="text-[26px] font-semibold text-jobhunter-text tracking-tight">Applications</h1>
+          <p className="text-[13px] text-jobhunter-textMuted mt-0.5">Manage your job applications</p>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={handleAddNew}
-          className="btn btn-primary"
-        >
+        <button type="button" onClick={handleAddNew} className="btn btn-primary">
           <Plus className="w-4 h-4" />
           Add Application
-        </motion.button>
-      </motion.div>
+        </button>
+      </div>
 
-      {/* Error Display */}
       {error && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-        >
+        <div className="p-4 bg-jobhunter-surface border border-jobhunter-border rounded-lg text-red-400 text-[13px]">
           {error}
-        </motion.div>
+        </div>
       )}
 
-      {/* Filters and Search */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.6 }}
-        className="card p-6"
-      >
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Search */}
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search applications..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="form-input pl-10"
-              />
-            </div>
+      <div className="card p-3">
+        <div className="flex flex-col lg:flex-row gap-3">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-jobhunter-textMuted" />
+            <input
+              type="text"
+              placeholder="Search applications..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="form-input pl-10"
+            />
           </div>
-
-          {/* Status Filter */}
           <div className="flex gap-2 overflow-x-auto">
             {statusOptions.map((option) => (
               <button
                 key={option.value}
+                type="button"
                 onClick={() => setFilter(option.value)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`px-3 py-2 rounded-lg text-[13px] font-medium whitespace-nowrap transition-all duration-150 ${
                   filter === option.value
-                    ? 'bg-indigo-100 text-indigo-700 border border-indigo-200'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-jobhunter-surfaceAlt text-jobhunter-accent border border-jobhunter-accent'
+                    : 'bg-jobhunter-surfaceAlt text-jobhunter-textMuted border border-jobhunter-border hover:border-jobhunter-accent hover:text-jobhunter-text'
                 }`}
               >
                 {option.label} ({option.count})
@@ -188,44 +163,27 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
             ))}
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Applications List */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.6 }}
-        className="space-y-4"
-      >
+      <div className="space-y-3">
         {isLoading ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="card p-12 text-center"
-          >
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading applications...</h3>
-          </motion.div>
+          <div className="card p-8 text-center">
+            <div className="w-8 h-8 border-2 border-jobhunter-border border-t-jobhunter-accent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-[13px] text-jobhunter-textMuted">Loading applications...</p>
+          </div>
         ) : filteredApplications.length > 0 ? (
-          filteredApplications.map((app, index) => (
-            <motion.div
+          filteredApplications.map((app) => (
+            <div
               key={app.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05, duration: 0.4 }}
-              className="card card-hover p-6"
+              className="card card-hover p-4"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center text-white font-bold">
-                    {app.company.charAt(0)}
-                  </div>
+                  <CompanyLogo company_domain={app.company_domain} company={app.company} size={12} />
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{app.company}</h3>
-                    <p className="text-gray-600">{app.role}</p>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                    <h3 className="text-base font-medium text-jobhunter-text">{app.company ?? 'Unknown company'}</h3>
+                    <p className="text-[13px] text-jobhunter-textMuted">{app.role ?? 'Unknown role'}</p>
+                    <div className="flex items-center gap-4 mt-2 text-[12px] text-jobhunter-textMuted">
                       {app.location && (
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3 h-3" />
@@ -243,72 +201,62 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
                     </div>
                   </div>
                 </div>
-
                 <div className="flex items-center gap-3">
-                  <span className={`status-badge ${getStatusColor(app.status)}`}>
-                    {app.status}
-                  </span>
+                  <span className={`status-badge ${getStatusColor(app.status)}`}>{app.status}</span>
                   <div className="flex gap-1">
                     <button
+                      type="button"
                       onClick={() => handleEdit(app)}
-                      className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                      className="p-2 text-jobhunter-textMuted hover:text-jobhunter-accent hover:bg-jobhunter-surfaceAlt rounded-lg transition-colors duration-150"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
+                      type="button"
                       onClick={() => handleDelete(app.id)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 text-jobhunter-textMuted hover:text-red-400 hover:bg-jobhunter-surfaceAlt rounded-lg transition-colors duration-150"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))
         ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-            className="card p-12 text-center"
-          >
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-gray-400" />
+          <div className="card p-12 text-center">
+            <div className="w-12 h-12 bg-jobhunter-surfaceAlt border border-jobhunter-border rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Search className="w-6 h-6 text-jobhunter-textMuted" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <p className="text-base font-medium text-jobhunter-text mb-1">
               {searchTerm || filter !== 'all' ? 'No applications found' : 'No applications yet'}
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {searchTerm || filter !== 'all' 
-                ? 'Try adjusting your search or filter criteria'
-                : 'Start by adding your first job application'
-              }
             </p>
-            <button onClick={handleAddNew} className="btn btn-primary">
+            <p className="text-[13px] text-jobhunter-textMuted mb-4">
+              {searchTerm || filter !== 'all' ? 'Try adjusting your search or filter' : 'Start by adding your first job application'}
+            </p>
+            <button type="button" onClick={handleAddNew} className="btn btn-primary">
               <Plus className="w-4 h-4" />
               Add Application
             </button>
-          </motion.div>
+          </div>
         )}
-      </motion.div>
+      </div>
 
-      {/* Add/Edit Form Modal */}
       <AnimatePresence>
         {showForm && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
             onClick={() => setShowForm(false)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              exit={{ opacity: 0, scale: 0.98 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md bg-white rounded-2xl p-6"
+              className="w-full max-w-md bg-jobhunter-surface border border-jobhunter-border rounded-[10px] p-6"
             >
               <ApplicationForm
                 application={editingApp}
@@ -326,8 +274,9 @@ const Applications = ({ applications = [], onAddApplication, onUpdateApplication
 // Application Form Component
 const ApplicationForm = ({ application, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
-    company: application?.company || '',
-    role: application?.role || '',
+    company: application?.company ?? '',
+    role: application?.role ?? '',
+    company_domain: application?.company_domain ?? '',
     location: application?.location || '',
     status: application?.status || 'Applied',
     source: application?.source || 'manual'
@@ -347,7 +296,7 @@ const ApplicationForm = ({ application, onSubmit, onCancel }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-900 mb-6">
+      <h2 className="text-base font-medium text-jobhunter-text mb-6">
         {application ? 'Edit Application' : 'Add New Application'}
       </h2>
       
@@ -360,8 +309,7 @@ const ApplicationForm = ({ application, onSubmit, onCancel }) => {
             value={formData.company}
             onChange={handleChange}
             className="form-input"
-            placeholder="Enter company name"
-            required
+            placeholder="Enter company name (optional)"
           />
         </div>
 
@@ -373,8 +321,19 @@ const ApplicationForm = ({ application, onSubmit, onCancel }) => {
             value={formData.role}
             onChange={handleChange}
             className="form-input"
-            placeholder="Enter job title"
-            required
+            placeholder="Enter job title (optional)"
+          />
+        </div>
+
+        <div>
+          <label className="form-label">Company domain (for logo)</label>
+          <input
+            type="text"
+            name="company_domain"
+            value={formData.company_domain}
+            onChange={handleChange}
+            className="form-input"
+            placeholder="e.g. wellsfargo.com (optional)"
           />
         </div>
 

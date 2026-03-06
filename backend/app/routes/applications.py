@@ -13,31 +13,32 @@ def add_application():
     user_id = data.get('user_id')
     company = data.get('company')
     role = data.get('role')
+    company_domain = data.get('company_domain')
     location = data.get('location')
     status = data.get('status', 'applied')
     source = data.get('source', 'manual')
     created_at = data.get('created_at', datetime.now(timezone.utc))
     updated_at = data.get('updated_at', datetime.now(timezone.utc))
 
-    if not all([user_id, company, role]):
-        return jsonify({'error': 'Missing required fields'}), 400
+    if not user_id:
+        return jsonify({'error': 'user_id is required'}), 400
 
-    new_application = Application(user_id=user_id, company=company, role=role, location=location, status=status, source=source, created_at=created_at, updated_at=updated_at)
+    new_application = Application(
+        user_id=user_id,
+        company=(company.strip() or None) if company else None,
+        role=(role.strip() or None) if role else None,
+        company_domain=(company_domain.strip() or None) if company_domain else None,
+        location=(location.strip() or None) if location else None,
+        status=status,
+        source=source,
+        created_at=created_at,
+        updated_at=updated_at
+    )
     db.session.add(new_application)
     db.session.commit()
     
     return jsonify({'message': 'Application added successfully', 
-        'application': {
-            'id': new_application.id,
-            'user_id': new_application.user_id,
-            'company': new_application.company,
-            'role': new_application.role,
-            'location': new_application.location,
-            'status': new_application.status,
-            'source': new_application.source,
-            'created_at': new_application.created_at.isoformat(),
-            'updated_at': new_application.updated_at.isoformat()
-        }
+        'application': _application_to_dict(new_application)
     }), 201
 
 # UPDATE STATUS - PATCH
@@ -46,13 +47,15 @@ def update_application(application_id):
     application_record = Application.query.get_or_404(application_id)
     data = request.get_json()
     
-    # Update all fields that are provided
+    # Update all fields that are provided (allow null/empty)
     if "company" in data:
-        application_record.company = data["company"]
+        application_record.company = (data["company"].strip() or None) if data.get("company") else None
     if "role" in data:
-        application_record.role = data["role"]
+        application_record.role = (data["role"].strip() or None) if data.get("role") else None
+    if "company_domain" in data:
+        application_record.company_domain = (data["company_domain"].strip() or None) if data.get("company_domain") else None
     if "location" in data:
-        application_record.location = data["location"]
+        application_record.location = (data["location"].strip() or None) if data.get("location") else None
     if "status" in data:
         application_record.status = data["status"]
     if "source" in data:
@@ -62,17 +65,7 @@ def update_application(application_id):
     db.session.commit()
 
     return jsonify({'message': 'Application updated successfully', 
-        'application': {
-            'id': application_record.id,
-            'user_id': application_record.user_id,
-            'company': application_record.company,
-            'role': application_record.role,
-            'location': application_record.location,
-            'status': application_record.status,
-            'source': application_record.source,
-            'created_at': application_record.created_at.isoformat(),
-            'updated_at': application_record.updated_at.isoformat()
-        }
+        'application': _application_to_dict(application_record)
     }), 200
 
 
@@ -83,18 +76,23 @@ def delete_application(application_id):
     db.session.delete(application_record)
     db.session.commit()
     return jsonify({'message': 'Application deleted successfully',
-        'application': {
-            'id': application_record.id,
-            'user_id': application_record.user_id,
-            'company': application_record.company,
-            'role': application_record.role,
-            'location': application_record.location,
-            'status': application_record.status,
-            'source': application_record.source,
-            'created_at': application_record.created_at.isoformat(),
-            'updated_at': application_record.updated_at.isoformat()
-        }
+        'application': _application_to_dict(application_record)
     }), 200
+
+
+def _application_to_dict(application):
+    return {
+        'id': application.id,
+        'user_id': application.user_id,
+        'company': application.company,
+        'role': application.role,
+        'company_domain': application.company_domain,
+        'location': application.location,
+        'status': application.status,
+        'source': application.source,
+        'created_at': application.created_at.isoformat(),
+        'updated_at': application.updated_at.isoformat()
+    }
 
 
 # GET ALL APPLICATIONS - GET
@@ -105,17 +103,6 @@ def get_all_applications():
         return jsonify({'error': 'User ID is required'}), 400
 
     applications = Application.query.filter_by(user_id=user_id).all()
-    result = [
-        {'id' : application.id,
-         'user_id' : application.user_id,
-         'company' : application.company,
-         'role' : application.role,
-         'location' : application.location,
-         'status' : application.status,
-         'source' : application.source,
-         'created_at' : application.created_at.isoformat(),
-         'updated_at' : application.updated_at.isoformat()}
-        for application in applications
-    ]
+    result = [_application_to_dict(app) for app in applications]
     return jsonify(result), 200
     
